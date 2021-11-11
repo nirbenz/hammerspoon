@@ -36,6 +36,33 @@ customBindings = {
 }
 hs.loadSpoon("Lunette")
 spoon.Lunette:bindHotkeys(customBindings)
+
+
+-----------------------------------------------
+-- Alt-Tab 
+-----------------------------------------------
+
+-- set up your windowfilter
+-- include minimized/hidden windows, current Space only
+switcher_space = hs.window.switcher.new(hs.window.filter.new():setCurrentSpace(true):setDefaultFilter{visible=true})
+
+--
+switcher_space.ui.highlightColor = {0.4,0.4,0.5,0.8}
+switcher_space.ui.thumbnailSize = 250
+switcher_space.ui.selectedThumbnailSize = 250
+switcher_space.ui.backgroundColor = {0.3, 0.3, 0.3, 0.5}
+switcher_space.ui.fontName = 'Helvetica'
+switcher_space.ui.textSize = 14
+switcher_space.ui.showSelectedThumbnail = false
+switcher_space.ui.showSelectedTitle = false
+switcher_space.ui.showThumbnails = true
+switcher_space.ui.animationDuration = 0
+
+
+-- bind to hotkeys; WARNING: at least one modifier key is required!
+-- hs.hotkey.bind('alt', 'tab', nil, function() switcher_space:next() end)
+-- hs.hotkey.bind({'alt', 'shift'},'tab', nil, function() switcher_space:previous() end)
+
 -----------------------------------------------
 -- WINDOWS AND SPACES
 -----------------------------------------------
@@ -103,9 +130,9 @@ end
 mash =      {"ctrl", "cmd"}
 -- mashshift = {"ctrl", "cmd", "shift"}
 
-hotkey.bind(mash, "right",nil,
+hotkey.bind(mash, "pagedown",nil,
       function() moveWindowOneSpace("right", true) end)
-hotkey.bind(mash, "left",nil,
+hotkey.bind(mash, "pageup",nil,
       function() moveWindowOneSpace("left", true) end)
 -- hotkey.bind(mashshift, "s",nil,
 --       function() moveWindowOneSpace("right", false) end)
