@@ -100,7 +100,9 @@ function obj:bindHotkeys(userBindings)
 end
 
 function obj:exec(commandName)
-  local window = hs.window.focusedWindow()
+  -- local window = hs.window.focusedWindow()
+  local window = hs.window.frontmostWindow()
+  print(window)
   local windowFrame = window:frame()
   local screen = window:screen()
   local screenFrame = screen:frame()
