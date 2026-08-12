@@ -1,0 +1,3 @@
+[submodule "Spoons/Drag.spoon"]
+	path = Spoons/Drag.spoon
+	url = https://github.com/nirbenz/Drag.spoon.git
