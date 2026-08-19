@@ -117,21 +117,8 @@ switcher.ui.animationDuration = 0
 
 local tabKey = hs.keycodes.map["tab"]
 
-local secureInputApps = {"1Password 7", "1Password", "SecurityAgent", "UserNotificationCenter", "Keychain Access"}
-
 local function mapCmdTab(e)
-  if hs.eventtap.isSecureInputEnabled() then
-    for _, name in ipairs(secureInputApps) do
-      local app = hs.application.get(name)
-      if app then
-        app:activate()
-        hs.alert.show(name .. " is waiting for input", 1.5)
-        return false
-      end
-    end
-    hs.alert.show("A password prompt is blocking the switcher", 1.5)
-    return false
-  end
+  if hs.eventtap.isSecureInputEnabled() then return false end
 
   local flags = e:getFlags()
   local key = e:getKeyCode()
