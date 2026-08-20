@@ -1,15 +1,88 @@
--- Open the hs.ipc message port so the `hs` CLI can reach this instance
--- (needed for `hs -c "..."`, e.g. scripted reloads).
-require("hs.ipc")
-
 -----------------------------------------------
 -- Rectangle/Spectacle via Lunette
 -----------------------------------------------
--- Window bindings now live in the KEYMAP table at the bottom of this
--- file (single source of truth) and are generated via keymap.toLunette.
--- The spoon is loaded here; bindHotkeys is called after KEYMAP is defined.
+
+-- example custom map with `leftHalf` and `rightHalf` reconfigured and the history commands disabled
+-- you can have multiple bindings to run a command, as shown in leftHalf
+
+customBindings = {
+  leftHalf = {
+    {{"cmd", "alt", "ctrl"}, "left"},
+  },
+  rightHalf = {
+    {{"cmd", "alt", "ctrl"}, "right"},
+  },
+  topHalf = {
+    {{"cmd", "alt", "ctrl"}, "up"},
+  },
+  bottomHalf = {
+    {{"cmd", "alt", "ctrl"}, "down"},
+  },
+  fullScreen = {
+    {{"cmd", "alt", "ctrl"}, "M"},
+  },
+--
+  topLeft = false,
+  topRight = false,
+  bottomLeft = false,
+  bottomRight = false,
+  center = false,
+  nextThird = false,
+  prevThird = false,
+  enlarge = false,
+  shrink = false,
+  undo = false,
+  redo = false,
+  nextDisplay = false,
+  prevDisplay = false,
+  rightTwoThirds = false,
+  leftTwoThirds = false,
+}
+-- Rectangle app default keybindings
+rectangleBindings = {
+    leftHalf = {
+      {{"ctrl", "alt"}, "left"},
+    },
+    rightHalf = {
+      {{"ctrl", "alt"}, "right"},
+    },
+    topHalf = {
+      {{"ctrl", "alt"}, "up"},
+    },
+    bottomHalf = {
+      {{"ctrl", "alt"}, "down"},
+    },
+    topLeft = {
+      {{"ctrl", "alt"}, "u"},
+    },
+    topRight = {
+      {{"ctrl", "alt"}, "i"},
+    },
+    bottomLeft = {
+      {{"ctrl", "alt"}, "j"},
+    },
+    bottomRight = {
+      {{"ctrl", "alt"}, "k"},
+    },
+    fullScreen = {
+      {{"ctrl", "alt"}, "return"},
+    },
+    center = false,
+    nextThird = false,
+    prevThird = false,
+    enlarge = false,
+    shrink = false,
+    undo = false,
+    redo = false,
+    nextDisplay = false,
+    prevDisplay = false,
+    rightTwoThirds = false,
+    leftTwoThirds = false,
+  }
+
 
 hs.loadSpoon("Lunette")
+spoon.Lunette:bindHotkeys(rectangleBindings)
 
 -----------------------------------------------
 -- NEW ALT TAB
@@ -226,8 +299,25 @@ end
 
 
 
--- Space-move bindings (ctrl+cmd + pageup/pagedown) now live in the
--- KEYMAP table at the bottom of this file.
+mash =      {"ctrl", "cmd"}
+-- mashshift = {"ctrl", "cmd", "shift"}
+
+hotkey.bind(mash, "pagedown",nil,
+      function() moveWindowOneSpaceDrag("right", true) end)
+hotkey.bind(mash, "pageup",nil,
+      function() moveWindowOneSpaceDrag("left", true) end)
+-- hotkey.bind(mash, "pagedown",nil,
+--       function() moveWindowOneSpacePreSequoia("right", true) end)
+-- hotkey.bind(mash, "pageup",nil,
+--       function() moveWindowOneSpacePreSequoia("left", true) end)
+
+
+-- hotkey.bind(mashshift, "s",nil,
+--       function() moveWindowOneSpace("right", false) end)
+-- hotkey.bind(mashshift, "a",nil,
+--       function() moveWindowOneSpace("left", false) end)
+
+-- alcm = {"⌥", "⌘"}
 
 -----------------------------------------------
 -- NEW SPACE AND MOVE WINDOW
@@ -271,7 +361,7 @@ function createSpaceAndMoveWindow()
 
 end
 
--- cmd+alt+ctrl+n (new space + move window) now lives in the KEYMAP table.
+hotkey.bind({"cmd", "alt", "ctrl"}, "n", createSpaceAndMoveWindow)
 
 -----------------------------------------------
 -- Finder PgupPgdn Override
@@ -399,52 +489,3 @@ local horizontalScrollTap = hs.eventtap.new(
 )
 
 horizontalScrollTap:start()
-
------------------------------------------------
--- KEYMAP: single source of truth
------------------------------------------------
--- Every shortcut is declared once here. keymap.lua binds the ones
--- it owns (fn/app), generates the Lunette config (lunette=...), and
--- draws the cheatsheet from this same table. doc=true rows are bound
--- by eventtaps above and appear in the cheatsheet for completeness.
-
-local keymap = require("keymap")
-
-KEYMAP = {
-  -- Window (Lunette)
-  { group = "Window", mods = {"ctrl", "alt"}, key = "left",   label = "Left Half",    lunette = "leftHalf" },
-  { group = "Window", mods = {"ctrl", "alt"}, key = "right",  label = "Right Half",   lunette = "rightHalf" },
-  { group = "Window", mods = {"ctrl", "alt"}, key = "up",     label = "Top Half",     lunette = "topHalf" },
-  { group = "Window", mods = {"ctrl", "alt"}, key = "down",   label = "Bottom Half",  lunette = "bottomHalf" },
-  { group = "Window", mods = {"ctrl", "alt"}, key = "u",      label = "Top Left",     lunette = "topLeft" },
-  { group = "Window", mods = {"ctrl", "alt"}, key = "i",      label = "Top Right",    lunette = "topRight" },
-  { group = "Window", mods = {"ctrl", "alt"}, key = "j",      label = "Bottom Left",  lunette = "bottomLeft" },
-  { group = "Window", mods = {"ctrl", "alt"}, key = "k",      label = "Bottom Right", lunette = "bottomRight" },
-  { group = "Window", mods = {"ctrl", "alt"}, key = "return", label = "Full Screen",  lunette = "fullScreen" },
-
-  -- Spaces
-  { group = "Spaces", mods = {"ctrl", "cmd"}, key = "pagedown", label = "Move window to next space",
-    fn = function() moveWindowOneSpaceDrag("right", true) end },
-  { group = "Spaces", mods = {"ctrl", "cmd"}, key = "pageup",   label = "Move window to prev space",
-    fn = function() moveWindowOneSpaceDrag("left", true) end },
-  { group = "Spaces", mods = {"cmd", "alt", "ctrl"}, key = "n", label = "New space + move window",
-    fn = createSpaceAndMoveWindow },
-
-  -- -- Switcher (bound by eventtap above)
-  -- { group = "Switcher", mods = {"cmd"},          key = "tab", label = "Next window",     doc = true },
-  -- { group = "Switcher", mods = {"cmd", "shift"}, key = "tab", label = "Previous window", doc = true },
-
-  -- -- Finder (bound by eventtap above, Finder only)
-  -- { group = "Finder", mods = {}, key = "pageup",   label = "Previous tab", doc = true },
-  -- { group = "Finder", mods = {}, key = "pagedown", label = "Next tab",     doc = true },
-
-  -- -- Mouse / scroll (bound by eventtap above)
-  -- { group = "Mouse", chordText = "⌃scroll", label = "Horizontal scroll", doc = true },
-
-  -- Help (self-documenting: the cheatsheet toggle lives in the table too)
-  { group = "Help", mods = {"cmd", "alt", "ctrl"}, key = "/", label = "Toggle this cheatsheet",
-    fn = function() keymap.toggle(KEYMAP) end },
-}
-
-keymap.bindAll(KEYMAP)
-spoon.Lunette:bindHotkeys(keymap.toLunette(KEYMAP))
