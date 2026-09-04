@@ -28,4 +28,22 @@ Then reload Hammerspoon. `hs.ipc` is loaded by `init.lua`, so the `hs` CLI works
 
 ## Archive
 
-The `archive/spaces-sources` branch keeps the hs.spaces v0.3 source tree and the 2021 `hs._asm.undocumented.spaces` module that predated it. Neither is loaded by the config.
+This is the `archive/spaces-sources` branch, tagged `archive-spaces-sources`. It is a frozen snapshot of master from 2026-09-04, right before the spaces-related files were removed, and is not meant to be merged back. It exists so the old modules stay reachable without cluttering master.
+
+What it keeps that master no longer has:
+
+- `hs/_asm/undocumented/spaces/`: asmagill's `hs._asm.undocumented.spaces`, the 2021 module built on private CoreGraphics space APIs.
+- `hs._asm.spaces/`: the source tree of asmagill's `hs._asm.spaces` (hs.spaces v0.3), the module that later became core `hs.spaces`.
+- `hs/spaces.lua`, `hs/spaces.docs.json`, `hs/libspaces.dylib`, `hs/libspaces_watcher.dylib` (plus dSYMs): the built v0.3 module, vendored so it sat first on the Lua path and shadowed the copy bundled with Hammerspoon.
+- `init.lua.pre-keymap`: `init.lua` from before shortcuts were consolidated into the `KEYMAP` table.
+
+### Why the repo carried three spaces modules
+
+The git history explains it. None of this was a deliberate decision to keep alternatives around; the old module was just never deleted when the next one arrived.
+
+1. Nov 2021 (cb21893). The first commit added `hs/_asm/undocumented/spaces` and `init.lua` did `require "hs._asm.undocumented.spaces"`. Hammerspoon had no spaces module of its own yet, so this was the only way to enumerate spaces and move windows between them.
+2. Nov 2024 (7389048, "Updates."). `init.lua` switched to `require "hs.spaces"`, and both `hs._asm.spaces/` (source) and the built `hs/spaces.lua` plus dylibs landed in the same commit. This coincides with `hs.spaces.moveWindowToSpace` breaking on macOS 15 Sequoia; vendoring asmagill's v0.3 directly looks like an attempt to get a working build. It could not help: Hammerspoon 1.1.1 bundles the same v0.3 code (its `spaces.lua` differs from the vendored one only by a loader preamble). The 2021 module stayed in the tree unused from this point on.
+3. Late 2024 onwards. `Spoons/Drag.spoon` took over moving windows between spaces by dragging them through Mission Control, which sidesteps the broken private API. `init.lua` still uses `hs.spaces` for enumeration (`allSpaces`, `spacesForScreen`, `activeSpaceOnScreen`, `addSpaceToScreen`), all of which the bundled module provides.
+4. Sep 2026. `hs._asm.spaces/` and `hs/_asm/` were moved here (c56ed43), then `hs/` and `init.lua.pre-keymap` followed (a56f8d7). Master now relies on the `hs.spaces` shipped inside Hammerspoon.app and carries no spaces code of its own.
+
+If a future Hammerspoon release changes `hs.spaces` behaviour, this branch has the exact v0.3 build and the 2021 fallback to compare against.
