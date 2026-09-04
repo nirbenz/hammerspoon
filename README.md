@@ -16,7 +16,7 @@ My Hammerspoon config. Lives at `~/.hammerspoon` as a plain clone of this repo a
 - `keymap.lua` binds that table, generates the Lunette config from it, and draws the cheatsheet.
 - `Spoons/Lunette.spoon` is Lunette 0.4, vendored.
 - `Spoons/Drag.spoon` is vendored from my fork at nirbenz/Drag.spoon. It moves windows between spaces through Mission Control because `hs.spaces.moveWindowToSpace` broke on Sequoia.
-- `hs/` carries asmagill's hs.spaces v0.3 (`spaces.lua` plus two dylibs). It sits first on the Lua path, so `require "hs.spaces"` loads it instead of the copy bundled with Hammerspoon.
+- `require "hs.spaces"` resolves to the module bundled with Hammerspoon (1.1.1 ships asmagill's v0.3). Nothing here shadows it.
 
 ## Install
 
@@ -28,4 +28,4 @@ Then reload Hammerspoon. `hs.ipc` is loaded by `init.lua`, so the `hs` CLI works
 
 ## Archive
 
-The `archive/spaces-sources` branch keeps the hs.spaces v0.3 source tree and the 2021 `hs._asm.undocumented.spaces` module that predated it. Neither is loaded by the config.
+The `archive/spaces-sources` branch (tagged `archive-spaces-sources`, not meant to be merged back) keeps what master used to carry for spaces: the 2021 `hs._asm.undocumented.spaces` module, the hs.spaces v0.3 source tree, the vendored `hs/spaces.lua` plus dylibs that shadowed the bundled module, and `init.lua.pre-keymap` from before the KEYMAP refactor. None of it is loaded by the config.
