@@ -398,7 +398,7 @@ local horizontalScrollTap = hs.eventtap.new(
   end
 )
 
-horizontalScrollTap:start()
+-- horizontalScrollTap:start()
 
 -----------------------------------------------
 -- KEYMAP: single source of truth
@@ -427,7 +427,7 @@ KEYMAP = {
     fn = function() moveWindowOneSpaceDrag("right", true) end },
   { group = "Spaces", mods = {"ctrl", "cmd"}, key = "pageup",   label = "Move window to prev space",
     fn = function() moveWindowOneSpaceDrag("left", true) end },
-  { group = "Spaces", mods = {"cmd", "alt", "ctrl"}, key = "n", label = "New space + move window",
+  { group = "Spaces", mods = {"alt", "ctrl"}, key = "n", label = "New space + move window",
     fn = createSpaceAndMoveWindow },
 
   -- -- Switcher (bound by eventtap above)
